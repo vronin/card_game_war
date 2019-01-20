@@ -76,6 +76,7 @@ func createNewGame() Game {
 	game := Game{state: Ok, dummyRound: false}
 	deck := shuffleDeck(generateSortedDeck())
 	game.playersDecks = splitDeck(deck, len(deck)/2)
+
 	game.tableDeck = make([]Card, 0, len(deck))
 
 	return game
@@ -148,21 +149,28 @@ func playGame(game *Game) {
 func main() {
 	gamesCount := 0
 	totalRounds := 0
+	totalFirstPlayerWins := 0
 	for true {
 		game := createNewGame()
 		playGame(&game)
 
+		// Calculate statistics
 		gamesCount = gamesCount + 1
 		totalRounds = totalRounds + game.roundsCount
-
-		if gamesCount%10000 == 0 {
-			fmt.Println()
-			fmt.Println("Game ", gamesCount, "is done")
-			fmt.Println("Statistics:")
-			fmt.Println("Average moves per game:", totalRounds/gamesCount)
+		if game.state == GameCompletedFirstPlayerWon {
+			totalFirstPlayerWins = totalFirstPlayerWins + 1
 		}
 		if game.state == GameCompletedDraw {
 			fmt.Println("Game ", gamesCount, " Whoaaaa. It's a draw. ")
+		}
+
+		// Print statistics
+		if gamesCount%100000 == 0 {
+			fmt.Println()
+			fmt.Println("Game ", gamesCount, "is done")
+			fmt.Println("Statistics:")
+			fmt.Println("Average moves per game:", float64(totalRounds)/float64(gamesCount))
+			fmt.Println("First player wins in ", float64(totalFirstPlayerWins)/float64(gamesCount))
 		}
 	}
 }
