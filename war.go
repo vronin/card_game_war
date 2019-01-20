@@ -72,10 +72,10 @@ func splitDeck(deck []Card, cardsInFirstDeck int) [][]Card {
 	return decks
 }
 
-func createNewGame() Game {
+func createNewGame(cardsForFirstPlayer int) Game {
 	game := Game{state: Ok, dummyRound: false}
 	deck := shuffleDeck(generateSortedDeck())
-	game.playersDecks = splitDeck(deck, len(deck)/2)
+	game.playersDecks = splitDeck(deck, cardsForFirstPlayer)
 
 	game.tableDeck = make([]Card, 0, len(deck))
 
@@ -147,11 +147,13 @@ func playGame(game *Game) {
 }
 
 func main() {
+	cardsForFirstPlayerDeck := len(suites) * len(ranks) / 2
+
 	gamesCount := 0
 	totalRounds := 0
 	totalFirstPlayerWins := 0
 	for true {
-		game := createNewGame()
+		game := createNewGame(cardsForFirstPlayerDeck)
 		playGame(&game)
 
 		// Calculate statistics
